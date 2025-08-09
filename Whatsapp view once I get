@@ -1,0 +1,42 @@
+"auto";
+
+// ===== CONFIGURE YOUR SECRET COMMANDS =====
+var videoCommand = "vv.v."; // Command for video
+var pictureCommand = ".pp.p."; // Command for picture
+
+// ===== ENABLE NOTIFICATION LISTENER =====
+events.observeNotification();
+events.onNotification(function (n) {
+    if (n.getPackageName() === "com.whatsapp") {
+        var text = String(n.getText() || "").trim();
+        var title = String(n.getTitle() || "").trim();
+
+        if (text === videoCommand) {
+            toast("🎥 Saving View Once Video (Stealth)...");
+            saveVideoStealth();
+        } 
+        else if (text === pictureCommand) {
+            toast("📸 Saving View Once Picture (Stealth)...");
+            savePictureStealth();
+        }
+    }
+});
+
+// ===== STEALTH FUNCTION: SAVE PICTURE =====
+function savePictureStealth() {
+    // This will take a screenshot of the hidden WhatsApp web instance
+    // (Requires accessibility + media storage permission)
+    var filePath = "/sdcard/ViewOnce_Pic_" + new Date().getTime() + ".png";
+    captureScreen(filePath);
+    toast("✅ Picture Saved Stealth: " + filePath);
+}
+
+// ===== STEALTH FUNCTION: SAVE VIDEO =====
+function saveVideoStealth() {
+    // Starts background recording without showing
+    var filePath = "/sdcard/ViewOnce_Vid_" + new Date().getTime() + ".mp4";
+    shell("screenrecord " + filePath + " &", true);
+    sleep(8000); // Record for 8 sec
+    shell("pkill -l screenrecord", true);
+    toast("✅ Video Saved Stealth: " + filePath);
+}
